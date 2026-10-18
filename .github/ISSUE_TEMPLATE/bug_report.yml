@@ -1,0 +1,81 @@
+name: Bug report
+description: Something did not work as it should
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting it. The most useful thing you can add is the **report** from the app: open the window
+        (click the tray icon), click **Settings** at the bottom, press **Copy report**, and paste it into the
+        **Report from the app** box below. It holds the versions, your plan, what the app was doing and the last log
+        lines, with your SimBrief name and Windows user name blanked out. The app sends nothing by itself, so look it
+        over before you post it.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you saw, and what you expected to happen instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: How can it be made to happen again?
+      description: What you did before it went wrong, in order. Was it a real flight or a test?
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where did it go wrong?
+      options:
+        - Installing or uninstalling
+        - The window or the tray icon
+        - It did not open at the airport
+        - The SimBrief plan or the steps
+        - A step climb (the FCU, the push or the pull)
+        - BeyondATC
+        - Something else
+    validations:
+      required: true
+  - type: dropdown
+    id: live
+    attributes:
+      label: Was Live control on?
+      options:
+        - No, a dry run
+        - Yes, with Confirm each step on
+        - Yes, hands-off
+        - I am not sure
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Shown in the Settings card, for example 0.9.0.
+      placeholder: "0.9.0"
+    validations:
+      required: true
+  - type: input
+    id: aircraft
+    attributes:
+      label: Aircraft and its version
+      placeholder: "iniBuilds A330-300, version ..."
+  - type: textarea
+    id: report
+    attributes:
+      label: Report from the app
+      description: Settings, then Copy report, then paste here. Without it the problem is much harder to find.
+      render: text
+  - type: textarea
+    id: more
+    attributes:
+      label: Anything else?
+      description: Screenshots can be dragged into this box.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before you send it
+      options:
+        - label: I looked through the open issues for the same problem.
+          required: true

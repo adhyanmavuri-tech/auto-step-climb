@@ -1,0 +1,7 @@
+# Questions and bug reports both go through the forms, so every report has the same details.
+blank_issues_enabled: false
+# When the flightsim.to page exists, add it here so people with a question (not a bug) have somewhere to go:
+# contact_links:
+#   - name: Download and questions on flightsim.to
+#     url: https://flightsim.to/...
+#     about: The download page, with comments for questions and tips.
