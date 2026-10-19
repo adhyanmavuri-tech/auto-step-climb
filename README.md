@@ -2,6 +2,7 @@
 
 [Auto Step Climb](#about) flies the step climbs of your SimBrief flight plan in the iniBuilds A330 for Microsoft
 Flight Simulator 2024. It waits in the system tray and opens by itself when your A330 is on the ground at an airport.
+For other aircraft it can ask BeyondATC for the step climbs and tell you the answer.
 
 This page is for **bug reports and feature requests**.
 
@@ -29,8 +30,8 @@ Please look at the open issues first: someone may have reported the same thing.
 
 ## About
 
-- Windows 10 or 11 (64-bit), Microsoft Flight Simulator 2024, the iniBuilds A330, a free SimBrief account. BeyondATC is
-  optional.
+- Windows 10 or 11 (64-bit), Microsoft Flight Simulator 2024, the iniBuilds A330 (any other aircraft for BeyondATC
+  requests only), a free SimBrief account. BeyondATC is optional.
 - Everything runs on your PC. The only thing that leaves it is the request for your latest plan to simbrief.com, with
   your SimBrief username. No account, no telemetry, no update checks.
 - MIT licence.
