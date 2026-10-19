@@ -42,7 +42,7 @@ body:
     attributes:
       label: Was Live control on?
       options:
-        - No, a dry run
+        - No, watching only
         - Yes, with Confirm each step on
         - Yes, hands-off
         - I am not sure

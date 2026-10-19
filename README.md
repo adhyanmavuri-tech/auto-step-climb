@@ -20,10 +20,10 @@ Please look at the open issues first: someone may have reported the same thing.
 
 ## Before you report
 
-- It starts in **dry run**: it reads the sim and logs what it would do, and sends nothing. If a step did not happen,
-  check that **Live control** is on, and that the profile's controls passed the **Control test** (a button in the
-  window).
-- The A330 controls are not marked verified yet. Reports from real flights are exactly what is needed.
+- It starts **watching only**: it reads the sim and logs what it would do, and sends nothing, so it will not climb
+  your aircraft. If a step did not happen, check that **Live control** is on in Settings.
+- The A330 controls are marked verified (from the author's own flights). Reports from real flights on other setups
+  are exactly what is needed.
 - It cannot read the MCDU. The steps come from your SimBrief plan; if you changed them in the MCDU, change the
   **Steps** box in the window to match.
 
