@@ -1,0 +1,14 @@
+node_modules/
+config.json
+discovery.json
+logs/
+bin/
+*.log
+.DS_Store
+out/
+release/
+
+# Not part of the app
+retired/
+# Old working copy of the bug report page (its history is in this repository now)
+docs/github-repo/

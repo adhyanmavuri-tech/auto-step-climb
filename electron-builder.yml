@@ -1,0 +1,57 @@
+# How the Windows installer is built (npm run dist). Same tool and the same kind of installer as RoutePilot.
+appId: com.adhyanmavuri.autostepclimb
+productName: Auto Step Climb
+copyright: Copyright © 2026 Adhyan Mavuri
+
+directories:
+  output: release
+  buildResources: build
+
+# What goes into the app: the two bundled files, the window's page, the airport list, and the packages the app
+# needs at run time (node-simconnect and what it uses). The tools it was built with are not included.
+files:
+  - out/main.cjs
+  - out/preload.cjs
+  - public/**/*
+  - data/airports.json
+  - package.json
+  - node_modules/**/*
+  # The library's example programs are not needed.
+  - "!node_modules/node-simconnect/samples{,/**/*}"
+
+# The aircraft profiles are real files next to the program, so a profile for another aircraft can be read and copied.
+extraResources:
+  - from: profiles
+    to: profiles
+    filter:
+      - "*.json"
+
+asar: true
+# node-simconnect is LGPL: it stays a separate module as real files, so it can be replaced (THIRD-PARTY-NOTICES.md).
+asarUnpack:
+  - node_modules/node-simconnect/**
+# Nothing in the app is a native module, so there is nothing to rebuild.
+npmRebuild: false
+nodeGypRebuild: false
+
+artifactName: AutoStepClimb-Setup-${version}.${ext}
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: build/icon.ico
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Auto Step Climb
+  runAfterFinish: true
+  deleteAppDataOnUninstall: false
+  include: build/installer.nsh
+
+publish: null

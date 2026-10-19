@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Auto Step Climb</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script src="/skin.js"></script>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/classic.css">
+</head>
+<body>
+  <header class="top wrap">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+        <defs>
+          <linearGradient id="mark-g" x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0" stop-color="#38d5ff"/>
+            <stop offset="1" stop-color="#3ddc6e"/>
+          </linearGradient>
+        </defs>
+        <rect class="mark-bg" x="1" y="1" width="38" height="38" rx="9"/>
+        <path class="mark-line" d="M8 29h7v-7h8v-7h9" stroke="url(#mark-g)"/>
+        <circle cx="32" cy="15" r="2.8" fill="#3ddc6e"/>
+      </svg>
+      <div>
+        <h1>Auto Step Climb</h1>
+        <p class="tagline">Step climbs for MSFS 2024 airliners</p>
+      </div>
+    </div>
+    <div class="chips">
+      <span id="mode" class="chip">-</span>
+      <span id="conn" class="chip">-</span>
+      <span id="place" class="chip" hidden>-</span>
+      <span id="flightChip" class="chip" hidden>-</span>
+      <span id="atcChip" class="chip" hidden>-</span>
+      <button id="skinToggle" type="button" class="skin" title="Switch between the plain look and the cockpit look">Cockpit look</button>
+      <button id="quit" type="button" class="skin" title="Close the app. It stops watching for step points until you start it again.">Quit app</button>
+    </div>
+  </header>
+
+  <div id="bannerWrap" class="wrap"><div id="banner" class="banner" role="status" hidden></div></div>
+
+  <main class="wrap">
+    <section id="hero" class="card hero" data-tone="idle" aria-label="Status">
+      <div class="hero-head">
+        <span id="phase" class="phase">Idle</span>
+        <label class="switch">
+          <input id="enabled" type="checkbox" role="switch">
+          <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+          <span>Auto step climb</span>
+        </label>
+      </div>
+      <p id="message" class="message">Starting up</p>
+      <div class="readouts">
+        <div class="readout empty" id="nextTile">
+          <span class="label">Next step</span>
+          <strong id="nextLabel" class="value">-</strong>
+          <span id="nextLevel" class="sub"></span>
+        </div>
+        <div class="readout empty" id="distTile">
+          <span class="label">Distance</span>
+          <strong class="value"><span id="nextDist">-</span><span class="unit">NM</span></strong>
+          <span id="nextEta" class="sub eta"></span>
+        </div>
+        <div class="readout empty" id="xtkTile">
+          <span class="label">Off route</span>
+          <strong class="value"><span id="xtk">-</span><span class="unit">NM</span></strong>
+        </div>
+      </div>
+      <div id="profileWrap" class="profile" hidden>
+        <svg id="profile-chart" role="group" aria-label="Planned step climbs"></svg>
+        <div id="profileKey" class="key"></div>
+        <div id="profileTip" class="tip" role="status" hidden></div>
+      </div>
+      <p id="autoMode" class="auto-mode"></p>
+      <div class="actions">
+        <button id="confirm" type="button" class="go" hidden>Confirm step</button>
+        <button id="stepNow" type="button">Step now</button>
+        <button id="skip" type="button">Skip next</button>
+        <button id="reload" type="button">Reload OFP</button>
+        <button id="controlTest" type="button" hidden>Control test</button>
+        <button id="abort" type="button" class="danger push">Stop</button>
+      </div>
+      <p id="result" class="result" role="status"></p>
+    </section>
+
+    <section class="card aircraft" aria-labelledby="h-aircraft">
+      <h2 id="h-aircraft">Aircraft</h2>
+      <p id="title" class="aircraft-title">-</p>
+      <p id="profile" class="badge-row" hidden></p>
+      <dl id="aircraft" class="tiles"></dl>
+    </section>
+
+    <section class="card plan" aria-labelledby="h-plan">
+      <h2 id="h-plan">Plan <span id="planInfo" class="hint"></span></h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Step</th><th>Level</th><th>Status</th><th>Note</th></tr></thead>
+          <tbody id="steps"></tbody>
+        </table>
+      </div>
+      <p id="planError" class="error" hidden></p>
+      <p id="planWarning" class="warning" role="status" hidden></p>
+      <div class="actions"><button id="openSettings" type="button" class="primary" hidden>Open Settings</button></div>
+    </section>
+
+    <section class="card steps-card" aria-labelledby="h-steps">
+      <h2 id="h-steps">Steps</h2>
+      <p class="hint lead">As in the MCDU: <code>WAYPOINT/FL</code>, one per line.</p>
+      <label class="switch option">
+        <input id="stepDowns" type="checkbox" role="switch">
+        <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+        <span>Fly step downs</span>
+      </label>
+      <p class="hint option-hint">Some OFPs step down for airspace level rules. Off: the aircraft stays at the higher level and the climbs back up are skipped.</p>
+      <label class="switch option">
+        <input id="atcFirst" type="checkbox" role="switch">
+        <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+        <span>Ask BeyondATC first</span>
+      </label>
+      <p class="hint option-hint">Asks BeyondATC for each step and climbs only once ATC clears it. BeyondATC has to be running on this PC. Turn on Auto Respond in BeyondATC so it reads ATC back for you. <span id="atcStatus"></span></p>
+      <div id="atcAnywayWrap" hidden>
+        <label class="switch option">
+          <input id="atcClimbAnyway" type="checkbox" role="switch">
+          <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+          <span>Climb anyway if BeyondATC does not clear it</span>
+        </label>
+        <p class="hint option-hint">Off (the safe setting): a step BeyondATC does not clear is skipped, so the aircraft never climbs without a clearance. On: when BeyondATC is not running, does not answer, or refuses twice, the step is flown anyway. It only matters with Live control on. Leave it off on VATSIM or IVAO.</p>
+      </div>
+      <label class="switch option">
+        <input id="atcOther" type="checkbox" role="switch">
+        <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+        <span>Ask BeyondATC for the steps in other aircraft</span>
+      </label>
+      <p class="hint option-hint">For any aircraft the app does not control, such as the iniBuilds A340 and A350, the PMDG 777 and 737, the Fenix A320 family, the FlyByWire A32NX and A380X, the Headwind A339X and the iniBuilds A320neo and A321LR. Before each step point (about 10 NM ahead) the app asks BeyondATC for the new level and tells you the answer. The aircraft climbs by itself, or you climb it. The app sends nothing to the aircraft. BeyondATC has to be running on this PC.</p>
+      <label class="sr-only" for="stepsInput">Step climbs, one per line</label>
+      <textarea id="stepsInput" rows="5" spellcheck="false" autocomplete="off" placeholder="ARKIN/370&#10;KOMAK/390"></textarea>
+      <div class="actions">
+        <button id="applySteps" type="button" class="primary">Apply steps</button>
+        <button id="resetSteps" type="button">Reset to plan</button>
+      </div>
+      <pre id="stepErrors" class="error" hidden></pre>
+      <p class="hint">Waypoints are looked up on your SimBrief route. No OFP? Use +NM/FL, for example +300/370 for 300 NM after level-off; each later +NM/FL counts from the end of the step before it. The box starts filled with the OFP's steps.</p>
+    </section>
+
+    <section class="card log-card" aria-labelledby="h-log">
+      <h2 id="h-log">Log</h2>
+      <ol id="log" class="log" role="log"></ol>
+    </section>
+
+    <details id="settingsCard" class="card settings-card" hidden>
+      <summary><h2 id="h-settings">Settings</h2></summary>
+      <div class="settings-body">
+        <div class="field">
+          <label for="simbriefName">SimBrief username</label>
+          <div class="field-row">
+            <input id="simbriefName" type="text" maxlength="64" autocomplete="off" spellcheck="false" placeholder="Your SimBrief username">
+            <button id="saveSimbrief" type="button" class="primary">Save</button>
+          </div>
+          <p class="hint">Your latest flight plan is fetched from SimBrief when your A330 is at an airport. Generate it with the detailed navlog.</p>
+          <p id="simbriefNote" class="hint" hidden>A SimBrief user ID in the settings file is being used instead of a username. Saving a username here replaces it.</p>
+        </div>
+
+        <div class="field">
+          <label class="switch option">
+            <input id="liveSwitch" type="checkbox" role="switch">
+            <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+            <span>Live control</span>
+          </label>
+          <p class="hint option-hint">Off: the app only watches. It reads the sim and logs what it would do, but it will NOT climb your aircraft. On: it turns the FCU altitude knob and pushes or pulls it at each step point. If the Aircraft card says the controls are not verified yet, press Control test once first (it moves the FCU altitude by one click and back, to check the controls work on your sim).</p>
+        </div>
+
+        <div class="field">
+          <label class="switch option">
+            <input id="confirmEach" type="checkbox" role="switch">
+            <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+            <span>Confirm each step</span>
+          </label>
+          <p class="hint option-hint">Each step waits for you to press Confirm step, and is skipped if you are not there. Leave it off to fly hands-off.</p>
+        </div>
+
+        <div class="field">
+          <label class="switch option">
+            <input id="windowAtAirport" type="checkbox" role="switch">
+            <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+            <span>Open this window at the airport</span>
+          </label>
+          <p class="hint option-hint">When your A330 is on the ground at an airport, this window opens by itself behind the sim and your latest flight plan is fetched. Off: only the tray icon changes.</p>
+        </div>
+
+        <div id="startWithWindowsRow" class="field">
+          <label class="switch option">
+            <input id="startWithWindows" type="checkbox" role="switch">
+            <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+            <span>Start with Windows</span>
+          </label>
+          <p class="hint option-hint">The app waits quietly in the tray, so it is there when you load the A330. Without this you have to start it yourself.</p>
+        </div>
+
+        <div class="field">
+          <div class="actions">
+            <button id="openLogs" type="button">Open log folder</button>
+            <button id="openConfig" type="button">Open settings file</button>
+          </div>
+          <p class="hint"><span id="appVersion"></span>. Settings file: <code>config.json</code> in the app's data folder; it holds the rarer options.</p>
+        </div>
+
+        <div class="field">
+          <div class="actions">
+            <button id="copyReport" type="button">Copy report</button>
+            <button id="reportProblem" type="button" class="primary" hidden>Report a problem</button>
+          </div>
+          <p class="hint">Something wrong? Press <strong>Copy report</strong>, then <span id="reportHow">paste it into your bug report</span>. It holds the versions, your plan, what the app was doing and the last log lines, with your SimBrief name and Windows user name blanked out. The app sends nothing by itself.</p>
+        </div>
+      </div>
+    </details>
+  </main>
+
+  <dialog id="ask" class="ask" aria-labelledby="askTitle">
+    <form method="dialog">
+      <h3 id="askTitle">Are you sure?</h3>
+      <p id="askText"></p>
+      <div class="actions end">
+        <button type="submit" value="cancel" id="askCancel" autofocus>Cancel</button>
+        <button type="submit" value="ok" id="askOk" class="primary">OK</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

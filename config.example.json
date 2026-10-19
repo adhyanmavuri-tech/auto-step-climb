@@ -1,0 +1,20 @@
+{
+  "simbrief": { "username": "", "userId": "" },
+  "planFile": "",
+  "manualSteps": [],
+  "stepAt": "previous-fix",
+  "port": 8787,
+  "tray": true,
+  "atc": { "host": "127.0.0.1", "port": 41716 },
+  "engine": {
+    "enabled": true,
+    "confirmEachStep": false,
+    "climbMode": "managed",
+    "fallbackToOpen": true,
+    "leadNm": 0,
+    "weightGuard": true,
+    "weightToleranceFrac": 0.03,
+    "maxAltitudeFt": 41000,
+    "maxStepFt": 4000
+  }
+}

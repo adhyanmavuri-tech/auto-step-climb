@@ -1,0 +1,16 @@
+{
+  "_readme": "Template for aircraft whose FCU altitude knob is an input event (iniBuilds-style). Copy to <aircraft>.json, fill in the names from `npm run discover`, confirm the values with `npm run listen`, then press Control test on the dashboard. Files starting with _ are ignored.",
+  "name": "My aircraft (knob style)",
+  "titlePattern": "part of the aircraft title",
+  "verified": false,
+  "control": "knob",
+  "simVars": {
+    "fcuSelectedFt": "AUTOPILOT ALTITUDE LOCK VAR",
+    "apTargetFt": "AUTOPILOT ALTITUDE LOCK VAR"
+  },
+  "knob": { "inputEvent": "NAME_OF_THE_ALT_ROTARY_EVENT", "upValue": 1, "downValue": -1 },
+  "engage": {
+    "managed": [{ "inputEvent": "NAME_OF_THE_ALT_PUSH_EVENT", "value": 1, "releaseValue": 0, "pulseMs": 200 }],
+    "open": [{ "inputEvent": "NAME_OF_THE_ALT_PULL_EVENT", "value": 1, "releaseValue": 0, "pulseMs": 200 }]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "_readme": "Template for aircraft whose selected altitude can be set in one action, for example a SimConnect key event that takes feet. The names below are placeholders. Copy to <aircraft>.json, fill them in, then press Control test on the dashboard. \"altitudeFt\" passes the target altitude. Files starting with _ are ignored.",
+  "name": "My aircraft (direct style)",
+  "titlePattern": "part of the aircraft title",
+  "verified": false,
+  "control": "direct",
+  "simVars": {
+    "fcuSelectedFt": "AUTOPILOT ALTITUDE LOCK VAR",
+    "apTargetFt": "AUTOPILOT ALTITUDE LOCK VAR"
+  },
+  "setAltitude": { "keyEvent": "NAME_OF_THE_SET_ALTITUDE_KEY_EVENT", "data": "altitudeFt" },
+  "engage": {
+    "managed": [{ "keyEvent": "NAME_OF_THE_MANAGED_CLIMB_KEY_EVENT" }],
+    "open": [{ "keyEvent": "NAME_OF_THE_OPEN_CLIMB_KEY_EVENT" }]
+  }
+}

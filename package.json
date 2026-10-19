@@ -1,0 +1,45 @@
+{
+  "name": "auto-step-climb",
+  "productName": "Auto Step Climb",
+  "version": "0.10.0",
+  "private": true,
+  "description": "Flies the step climbs of your SimBrief flight plan in the iniBuilds A330, and asks BeyondATC for the step climbs of other aircraft, for Microsoft Flight Simulator 2024",
+  "author": "Adhyan Mavuri",
+  "license": "MIT",
+  "type": "module",
+  "main": "out/main.cjs",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node src/main.ts",
+    "background": "node src/main.ts --background --open",
+    "preview": "node src/main.ts --preview --background --open",
+    "stop": "node scripts/stop.ts",
+    "status": "node scripts/status.ts",
+    "demo": "node src/main.ts --demo",
+    "discover": "node scripts/discover.ts",
+    "listen": "node scripts/listen.ts",
+    "impulse": "node scripts/impulse.ts",
+    "atc-listen": "node scripts/atc-listen.ts",
+    "atc-probe": "node scripts/atc-probe.ts",
+    "build-airports": "node scripts/build-airports.ts",
+    "build-icons": "node scripts/build-icons.ts",
+    "bundle": "node scripts/bundle.ts",
+    "app": "node scripts/run-app.ts",
+    "dist": "node scripts/dist.ts",
+    "test": "node --test \"test/**/*.test.ts\"",
+    "typecheck": "tsc --noEmit",
+    "typecheck:electron": "tsc -p tsconfig.electron.json --noEmit"
+  },
+  "dependencies": {
+    "node-simconnect": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3",
+    "esbuild": "^0.21.5",
+    "typescript": "^7.0.2"
+  }
+}

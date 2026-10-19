@@ -1,0 +1,276 @@
+/* The plain look: light or dark to match the system, flat cards, one column. It sits on top of the
+   cockpit stylesheet and is scoped to html[data-skin="classic"], so switching looks is one attribute. */
+
+html[data-skin="classic"] {
+  color-scheme: light dark;
+  --bg: #f4f5f7;
+  --panel: #ffffff;
+  --panel-2: #ffffff;
+  --well: #f4f5f7;
+  --line: #e1e5ea;
+  --line-2: #cfd6df;
+  --text: #1b2430;
+  --muted: #667085;
+  --faint: #77849a;
+  --green: #1a7f37;
+  --cyan: #1f6feb;
+  --amber: #b26a00;
+  --red: #c62828;
+  --busy: #6b4eff;
+  --green-bg: rgba(26, 127, 55, 0.08);
+  --cyan-bg: rgba(31, 111, 235, 0.08);
+  --amber-bg: rgba(178, 106, 0, 0.08);
+  --red-bg: rgba(198, 40, 40, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-skin="classic"] {
+    --bg: #11151b;
+    --panel: #1a2029;
+    --panel-2: #1a2029;
+    --well: #11151b;
+    --line: #2a3340;
+    --line-2: #384355;
+    --text: #e6eaf0;
+    --muted: #93a0b2;
+    --faint: #667085;
+    --green: #4cc275;
+    --cyan: #5b9dff;
+    --amber: #f0b23c;
+    --red: #ff6b6b;
+    --busy: #9d8cff;
+    --green-bg: rgba(76, 194, 117, 0.1);
+    --cyan-bg: rgba(91, 157, 255, 0.1);
+    --amber-bg: rgba(240, 178, 60, 0.1);
+    --red-bg: rgba(255, 107, 107, 0.1);
+  }
+}
+
+html[data-skin="classic"] body { background: var(--bg); }
+html[data-skin="classic"] ::selection { background: rgba(31, 111, 235, 0.25); }
+html[data-skin="classic"] code { color: inherit; background: var(--bg); border: 1px solid var(--line); }
+
+/* ---------- layout: one column of full-width cards, in the original order ---------- */
+
+html[data-skin="classic"] .wrap { max-width: 980px; }
+html[data-skin="classic"] main { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+html[data-skin="classic"] .hero,
+html[data-skin="classic"] .aircraft,
+html[data-skin="classic"] .plan,
+html[data-skin="classic"] .steps-card,
+html[data-skin="classic"] .log-card { grid-column: 1 / -1; }
+html[data-skin="classic"] .hero { order: 1; }
+html[data-skin="classic"] .aircraft { order: 2; }
+html[data-skin="classic"] .steps-card { order: 3; }
+html[data-skin="classic"] .plan { order: 4; }
+html[data-skin="classic"] .log-card { order: 5; }
+html[data-skin="classic"] .settings-card { order: 6; }
+
+/* ---------- header ---------- */
+
+html[data-skin="classic"] .top { padding-top: 16px; padding-bottom: 8px; }
+html[data-skin="classic"] .mark,
+html[data-skin="classic"] .tagline { display: none; }
+html[data-skin="classic"] h1 { font-size: 20px; font-weight: 700; letter-spacing: 0; text-transform: none; }
+
+html[data-skin="classic"] .chip,
+html[data-skin="classic"] button.skin {
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text);
+  background: var(--panel);
+  border-color: var(--line);
+}
+html[data-skin="classic"] .chip::before { display: none; }
+html[data-skin="classic"] .chip.ok { color: var(--green); }
+html[data-skin="classic"] .chip.warn { color: var(--amber); }
+html[data-skin="classic"] .chip.bad { color: var(--red); }
+
+html[data-skin="classic"] .banner {
+  display: block;
+  padding: 10px 14px;
+  border: 1px solid var(--amber);
+  border-radius: 8px;
+  color: var(--amber);
+  background: var(--panel);
+  font-size: 15px;
+}
+html[data-skin="classic"] .banner strong,
+html[data-skin="classic"] .banner.dry strong,
+html[data-skin="classic"] .banner.ask strong,
+html[data-skin="classic"] .banner.demo strong,
+html[data-skin="classic"] .banner.live strong {
+  margin-right: 8px;
+  font-size: inherit;
+  letter-spacing: 0;
+  text-transform: none;
+  color: inherit;
+}
+html[data-skin="classic"] .banner.live { border-color: var(--green); color: var(--green); background: var(--panel); }
+
+/* ---------- cards ---------- */
+
+html[data-skin="classic"] .card { padding: 18px 20px; border-radius: 12px; }
+/* Headings are plain sentence case: the section name, not a tracked-out label above it. */
+html[data-skin="classic"] h2 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text);
+}
+html[data-skin="classic"] h2 .hint { font-size: 13px; font-weight: 400; }
+html[data-skin="classic"] .hint { max-width: 72ch; }
+
+/* One family, two optical sizes: Display for the headline and numbers, Text for everything else. */
+html[data-skin="classic"] {
+  --display: "Segoe UI Variable Display", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+html[data-skin="classic"] h1,
+html[data-skin="classic"] h2,
+html[data-skin="classic"] .message { font-family: var(--display); }
+
+/* ---------- the status card ---------- */
+
+html[data-skin="classic"] .hero { padding-top: 14px; background: var(--panel); animation: none; }
+html[data-skin="classic"] .hero::before { display: none; }
+
+html[data-skin="classic"] .phase {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+html[data-skin="classic"] .phase::before { display: none; }
+html[data-skin="classic"] .hero[data-tone="info"] .phase { color: var(--cyan); }
+html[data-skin="classic"] .hero[data-tone="caution"] .phase,
+html[data-skin="classic"] .hero[data-tone="action"] .phase { color: var(--amber); }
+html[data-skin="classic"] .hero[data-tone="action"] .phase { animation: pulse 1.2s ease-in-out infinite; }
+html[data-skin="classic"] .hero[data-tone="active"] .phase { color: var(--busy); }
+@keyframes pulse { 50% { opacity: 0.45; } }
+
+html[data-skin="classic"] .switch { font-size: 15px; letter-spacing: 0; }
+/* The one thing to read first: what it is doing or waiting for, in a sentence. */
+html[data-skin="classic"] .message {
+  max-width: 60ch;
+  margin: 14px 0 18px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+html[data-skin="classic"] .readouts { display: flex; gap: 28px; flex-wrap: wrap; margin-bottom: 14px; }
+html[data-skin="classic"] .readout { padding: 0; background: none; border: 0; }
+html[data-skin="classic"] .label,
+html[data-skin="classic"] .tile dt {
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted);
+}
+html[data-skin="classic"] .value { margin-top: 0; font: 700 19px/1.3 var(--display, var(--sans)); }
+html[data-skin="classic"] .unit { margin-left: 4px; font-size: 13px; font-weight: 600; letter-spacing: 0; }
+html[data-skin="classic"] .sub { min-height: 0; margin-top: 0; font: 13px/1.3 var(--sans); color: var(--muted); }
+html[data-skin="classic"] .readout.empty .value { color: var(--faint); }
+
+html[data-skin="classic"] .auto-mode { max-width: 72ch; margin-bottom: 14px; font-size: 14px; line-height: 1.5; }
+html[data-skin="classic"] .auto-mode strong { font-size: 14px; letter-spacing: 0; text-transform: none; }
+html[data-skin="classic"] .hero .profile { margin: 4px 0 16px; }
+
+/* ---------- buttons ---------- */
+
+html[data-skin="classic"] button {
+  min-height: 0;
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  font: 600 15px/1.3 var(--sans);
+  letter-spacing: 0;
+}
+html[data-skin="classic"] button:hover:not(:disabled) { border-color: var(--cyan); background: var(--panel); }
+html[data-skin="classic"] button.primary,
+html[data-skin="classic"] button.go {
+  min-height: 0;
+  padding: 7px 14px;
+  background: var(--cyan);
+  border-color: var(--cyan);
+  color: #fff;
+  font-size: 15px;
+  animation: none;
+}
+html[data-skin="classic"] button.primary:hover:not(:disabled),
+html[data-skin="classic"] button.go:hover:not(:disabled) { background: var(--cyan); border-color: var(--cyan); filter: brightness(1.08); }
+html[data-skin="classic"] button.danger { color: var(--red); background: var(--panel); border-color: var(--line); }
+html[data-skin="classic"] button.danger:hover:not(:disabled) { background: var(--panel); border-color: var(--red); }
+html[data-skin="classic"] .actions .push { margin-left: 0; }
+html[data-skin="classic"] button.skin { padding: 3px 10px; font-size: 12px; font-weight: 600; color: var(--text); }
+html[data-skin="classic"] button.skin:hover:not(:disabled) { border-color: var(--cyan); }
+
+/* ---------- aircraft ---------- */
+
+html[data-skin="classic"] .aircraft-title { font-size: 15px; }
+html[data-skin="classic"] .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px 16px; margin-top: 8px; }
+html[data-skin="classic"] .tile { padding: 0; background: none; border: 0; }
+html[data-skin="classic"] .tile dd { margin: 0; font: 600 17px/1.3 var(--sans); }
+html[data-skin="classic"] .tile dd small { font-size: 13px; letter-spacing: 0; }
+html[data-skin="classic"] .badge { font-size: 12px; letter-spacing: 0; text-transform: none; }
+
+/* ---------- plan, steps, log ---------- */
+
+html[data-skin="classic"] .profile { background: var(--bg); border-color: var(--line); }
+html[data-skin="classic"] .profile text { font-family: var(--sans); font-size: 11.5px; }
+html[data-skin="classic"] .profile .xlab.next { font-weight: 700; }
+html[data-skin="classic"] .profile .tlab { font-size: 10.5px; }
+html[data-skin="classic"] .halo { fill: rgba(31, 111, 235, 0.2); }
+
+html[data-skin="classic"] th { padding: 6px 10px; font-size: 12px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+html[data-skin="classic"] td { padding: 9px 10px; font: 14px/1.45 var(--sans); }
+html[data-skin="classic"] td:nth-child(1),
+html[data-skin="classic"] td:nth-child(2) { font-family: var(--sans); font-weight: 400; }
+html[data-skin="classic"] td:nth-child(1) { font-weight: 600; }
+html[data-skin="classic"] .st { font-size: 14px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+html[data-skin="classic"] .st::before { display: none; }
+html[data-skin="classic"] .st-active { color: var(--busy); }
+html[data-skin="classic"] .st-dry-run { color: var(--amber); }
+
+html[data-skin="classic"] textarea {
+  min-height: 0;
+  padding: 8px 10px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+html[data-skin="classic"] textarea:focus { outline: 2px solid var(--cyan); outline-offset: 1px; border-color: var(--line); box-shadow: none; }
+
+html[data-skin="classic"] .settings-card { padding: 0; }
+html[data-skin="classic"] .settings-card > summary { padding: 16px 20px; }
+html[data-skin="classic"] .settings-card > summary h2 { margin: 0; }
+html[data-skin="classic"] .field > label:not(.switch) { font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--text); }
+html[data-skin="classic"] input[type="text"] {
+  min-height: 0;
+  padding: 7px 10px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  font-size: 15px;
+}
+html[data-skin="classic"] input[type="text"]:focus { outline: 2px solid var(--cyan); outline-offset: 1px; border-color: var(--line); box-shadow: none; }
+
+html[data-skin="classic"] .log { max-height: 260px; padding: 0; background: none; border: 0; }
+html[data-skin="classic"] .log li { padding: 1px 0; border-left: 0; }
+
+@media (max-width: 640px) {
+  html[data-skin="classic"] .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
