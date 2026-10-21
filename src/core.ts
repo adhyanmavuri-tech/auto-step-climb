@@ -11,6 +11,7 @@ import type { ConfigValue } from './config-write.ts'
 import { DEMO_ENGINE_OPTIONS, DEMO_TIMING, DemoAdapter, makeDemoPlan, planLevelLabels } from './demo.ts'
 import { StepClimbEngine } from './engine.ts'
 import { FakeBeyondAtc } from './fake-beyondatc.ts'
+import { PauseWatch } from './pause-watch.ts'
 import { fetchSimbriefOfp, manualPlan, parseSimbriefOfp } from './plan.ts'
 import { loadProfiles } from './profile.ts'
 import type { AircraftProfile } from './profile.ts'
@@ -18,6 +19,7 @@ import { buildReport } from './report.ts'
 import type { ReportEnv, ReportState } from './report.ts'
 import { SimConnectAdapter } from './sim.ts'
 import type { SimAdapter } from './sim.ts'
+import { StepAlerts } from './step-alerts.ts'
 import { formatSteps, parseStepLines } from './step-lines.ts'
 import { trayStatus } from './tray-status.ts'
 import type { TrayStatus } from './tray-status.ts'
@@ -136,6 +138,10 @@ export class AutoStepCore {
   private readonly profileErrors: string[]
   private readonly fingerprints = new Map<string, string>()
   private readonly testedThisRun = new Set<string>()
+  /** Marks the readings taken while the sim is paused. */
+  private readonly pauseWatch = new PauseWatch()
+  /** Works out which notes the person should get from what the engine did to the steps. */
+  private readonly alerts = new StepAlerts()
   private appState: AppState
   private plan: FlightPlan | null = null
   /** The plan as loaded (OFP, file, manual or demo), before any edits in the step box. */
@@ -269,21 +275,27 @@ export class AutoStepCore {
     this.watchdog = setInterval(() => {
       if (this.adapter.connected && this.adapter.lastDataAt > 0 && Date.now() - this.adapter.lastDataAt > 5_000 && this.latest !== null) {
         this.latest = null
-        this.dispatch(this.engine.tick(null))
+        this.runEngine(null)
       }
     }, 2_000)
     this.watchdog.unref()
 
     this.adapter.start((raw) => {
-      const snap = this.forEngine(raw)
+      const snap = this.pauseWatch.mark(this.forEngine(raw))
       this.latest = snap
       this.hooks.onSnapshot?.(snap)
       // An aircraft whose profile isn't verified can't act until it has passed a control test here.
       const profile = this.adapter.profile
       this.engine.setOptions({ controlReady: !profile || profile.verified || this.isControlTested(profile.name) })
       const o = this.engine.options
-      this.dispatch(this.engine.tick(snap ? { ...snap, atc: o.atcFirst || o.atcOtherAircraft ? this.atcLink.state : null } : null))
+      this.runEngine(snap ? { ...snap, atc: o.atcFirst || o.atcOtherAircraft ? this.atcLink.state : null } : null)
     })
+  }
+
+  /** One reading (or none) through the engine: what it asks for is sent, and what it did to the steps is told to the person. */
+  private runEngine(snap: Snapshot | null): void {
+    this.dispatch(this.engine.tick(snap))
+    for (const note of this.alerts.update(this.engine.status)) this.hooks.onNotify?.(note)
   }
 
   /**
@@ -713,6 +725,17 @@ export class AutoStepCore {
         this.engine.setOptions({ stepDowns: on })
         this.persist([{ path: ['engine', 'stepDowns'], value: on }])
         this.log('info', `Step downs ${on ? "on: the OFP's step descents will be flown" : 'off: the aircraft stays at the higher level'}`)
+      },
+      'weight-guard': (body) => {
+        const on = body.enabled === true
+        this.engine.setOptions({ weightGuard: on })
+        this.persist([{ path: ['engine', 'weightGuard'], value: on }])
+        this.log(
+          on ? 'info' : 'warn',
+          on
+            ? 'Weight check: on. A step is held while the aircraft is heavier than the OFP planned for that point'
+            : 'Weight check: off. A step is flown whatever the aircraft weighs'
+        )
       },
       confirm: () => this.engine.confirm(),
       'step-now': () => this.engine.stepNow(),

@@ -109,6 +109,20 @@ function ask(title, text, okLabel) {
 
 $('enabled').addEventListener('change', (e) => act('enable', { enabled: e.target.checked }))
 $('stepDowns').addEventListener('change', (e) => act('step-downs', { enabled: e.target.checked }))
+$('weightGuard').addEventListener('change', async (e) => {
+  const box = e.target
+  if (box.checked) {
+    act('weight-guard', { enabled: true })
+    return
+  }
+  box.checked = true // it turns off when the app says so, not before
+  const ok = await ask(
+    'Fly steps whatever the aircraft weighs?',
+    'A step will start even when the aircraft is heavier than the OFP planned for that point, for example with extra fuel. The aircraft may then not manage the next level, or may lose speed on the way up. The app gives up on a climb that stalls, but watch the FMA. You can turn the check back on at any time.',
+    'Turn the check off'
+  )
+  if (ok) act('weight-guard', { enabled: false })
+})
 $('atcFirst').addEventListener('change', (e) => act('atc-first', { enabled: e.target.checked }))
 $('atcOther').addEventListener('change', (e) => act('atc-other-aircraft', { enabled: e.target.checked }))
 $('atcClimbAnyway').addEventListener('change', async (e) => {
@@ -159,6 +173,7 @@ $('windowAtAirport').addEventListener('change', (e) => act('set-window-at-airpor
 $('startWithWindows').addEventListener('change', (e) => act('set-login-item', { enabled: e.target.checked }))
 $('openLogs').addEventListener('click', () => act('open-logs'))
 $('openConfig').addEventListener('click', () => act('open-config'))
+$('openGuide').addEventListener('click', () => act('open-guide'))
 $('copyReport').addEventListener('click', () => act('copy-report'))
 $('reportProblem').addEventListener('click', () => act('open-issues'))
 $('openSettings').addEventListener('click', () => {
@@ -712,6 +727,7 @@ function render(s) {
   setText($('message'), e.message)
   $('enabled').checked = e.enabled
   $('stepDowns').checked = e.stepDowns === true
+  $('weightGuard').checked = e.weightGuard !== false
   $('atcFirst').checked = e.atcFirst === true
   $('atcAnywayWrap').hidden = e.atcFirst !== true // it does nothing unless BeyondATC is asked first
   $('atcClimbAnyway').checked = e.atcClimbAnyway === true

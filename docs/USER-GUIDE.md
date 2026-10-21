@@ -1,6 +1,6 @@
 # Auto Step Climb: summary and user guide
 
-Version 0.10.0 (beta), for Microsoft Flight Simulator 2024 on Windows.
+Version 0.10.1 (beta), for Microsoft Flight Simulator 2024 on Windows.
 
 This guide has two parts: a summary of what the tool is and does, then a step-by-step guide to using it. It is
 written for people who fly, not for programmers. Where a word needs explaining, it is explained.
@@ -65,7 +65,7 @@ core. It runs at low priority so the sim always comes first.
 
 ### 1. Install it (once)
 
-1. Unzip the download and run `AutoStepClimb-Setup-0.10.0.exe`.
+1. Unzip the download and run `AutoStepClimb-Setup-0.10.1.exe`.
 2. Windows may say "Unknown publisher", because the installer is not code-signed. Click **More info**, then
    **Run anyway**. It installs for your user only and needs no administrator rights.
 3. The first time it opens it asks whether it may start with Windows. Say yes: that is how it is already
@@ -77,6 +77,9 @@ That is all. There is nothing to start before a flight.
 
 To remove it: Windows Settings, Apps, Auto Step Climb, Uninstall. Your settings and logs stay in
 `%APPDATA%\Auto Step Climb` until you delete that folder.
+
+To update, unzip the new version and run its installer over the old one. Your settings and logs stay. The
+program never checks for updates by itself, so look at the download page now and then.
 
 ### 2. Before each flight
 
@@ -177,6 +180,10 @@ it levels off where it is. It never retries on its own.
 **If you climb yourself** before the step point, it sees the new altitude and skips that step instead of
 fighting you.
 
+**Notifications.** A quiet Windows notification (no sound) tells you when a step starts, is complete, fails, is
+held back for weight or is skipped. While the program only watches, it tells you that a step was not flown and
+how to change that.
+
 **Long flights and sleeping through them.** Leave **Confirm each step** off (the default), make sure **Live
 control** is on, load the fuel and payload from the OFP too (a step is held while the aircraft is more than 3%
 heavier than the OFP planned), and do not let the PC sleep. The window can be closed: the program keeps flying
@@ -272,6 +279,9 @@ In the window (Settings card and Steps card):
 - **Open this window at the airport**: turn off to keep the window closed (the tray icon still changes).
 - **Start with Windows**: wait in the tray after you sign in.
 - **Fly step downs**: also fly the plan's step descents. Off: the aircraft stays at the higher level.
+- **Hold a step while the aircraft is too heavy**: the weight check, on by default. Turn it off only if you want a
+  step flown whatever the aircraft weighs (it asks you to confirm).
+- **Open the guide**: this guide, which is installed next to the program.
 - **Ask BeyondATC first**, **Climb anyway if BeyondATC does not clear it**, and **Ask BeyondATC for the steps in
   other aircraft**, as above.
 
@@ -291,7 +301,10 @@ the next time the program starts. A few you may want:
 
 - It acts only in stable level cruise (above 20,000 ft), within 30 NM of the planned route, for steps of up to
   4,000 ft, and never above 41,000 ft.
-- It holds a step while the aircraft is more than 3% heavier than the plan says it should be there.
+- It holds a step while the aircraft is more than 3% heavier than the plan says it should be there (a switch in
+  the Steps card turns this check off).
+- If you pause the sim it notices (the aircraft stops moving in the air), stops its own clock and sends nothing
+  until the sim runs again, so a step in progress carries on afterwards.
 - It checks every FCU command against the next reading from the sim, and never assumes a command worked.
 - If the sim stops answering in the middle of a step, the step is abandoned rather than continued blind.
 - **Stop** ends whatever is in progress and sends nothing further.
@@ -308,6 +321,8 @@ What the line under the big heading can say, and what to do:
   requests in it, switch on **Ask BeyondATC for the steps in other aircraft**.
 - **No flight plan yet: enter your SimBrief username in Settings**: set your username and press Save, then
   generate a plan in SimBrief.
+- **The sim is paused**: the aircraft is standing still in the air. The program waits and sends nothing; a step in
+  progress carries on when the sim runs again.
 - **Waiting for stable cruise before ...**: it waits until you have been level for a minute above 20,000 ft.
 - **... in 868 NM**: counting down to the step point. **STEP AHEAD** means it is close.
 - **Off the planned route by 45 NM - steps paused**: you are more than 30 NM from the plan; it resumes when you
@@ -333,6 +348,8 @@ icon is missing, look under the **^** arrow by the clock.
 3. Press **Report a problem**. It opens the bug report form on GitHub. Paste the report into the box and say
    what you expected and what happened.
 
+No GitHub account? Leave a comment on the download page instead and paste the report into it.
+
 If the window will not open at all, the log is in `%APPDATA%\Auto Step Climb\logs\autostep.log` (the tray
 menu has **Open log folder**). Attach it to the report.
 
@@ -352,7 +369,9 @@ menu has **Open log folder**). Attach it to the report.
   aircraft: reports from real flights are very welcome.
 - The installer is not code-signed, so Windows shows "Unknown publisher". The program is free and its licence
   is MIT.
-- It is not made by or affiliated with SimBrief, Microsoft, Asobo, iniBuilds, PMDG, Fenix, FlyByWire,
-  Headwind or BeyondATC.
+- It is not made by or affiliated with SimBrief, Navigraph, Microsoft, Asobo, iniBuilds, PMDG, Fenix Simulations,
+  FlyByWire Simulations, Headwind Simulations or BeyondATC.
+
+The source code is public: https://github.com/adhyanmavuri-tech/auto-step-climb
 
 Bug reports and requests: https://github.com/adhyanmavuri-tech/auto-step-climb/issues

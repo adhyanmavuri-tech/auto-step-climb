@@ -1,7 +1,7 @@
 {
   "name": "auto-step-climb",
   "productName": "Auto Step Climb",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "private": true,
   "description": "Flies the step climbs of your SimBrief flight plan in the iniBuilds A330, and asks BeyondATC for the step climbs of other aircraft, for Microsoft Flight Simulator 2024",
   "author": "Adhyan Mavuri",

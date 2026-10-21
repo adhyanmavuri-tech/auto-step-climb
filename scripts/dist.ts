@@ -60,7 +60,8 @@ fs.copyFileSync(path.join(root, 'docs', 'DOWNLOAD-README.txt'), path.join(stagin
 fs.copyFileSync(path.join(root, 'docs', 'USER-GUIDE.md'), path.join(staging, 'USER-GUIDE.txt'))
 fs.copyFileSync(path.join(root, 'LICENSE'), path.join(staging, 'LICENSE.txt'))
 fs.copyFileSync(path.join(root, 'THIRD-PARTY-NOTICES.md'), path.join(staging, 'THIRD-PARTY-NOTICES.txt'))
-const zip = path.join(release, `AutoStepClimb-${version}.zip`)
+fs.copyFileSync(path.join(root, 'licenses', 'GPL-3.0.txt'), path.join(staging, 'GPL-3.0.txt'))
+const zip =path.join(release, `AutoStepClimb-${version}.zip`)
 fs.rmSync(zip, { force: true })
 // tar.exe comes with Windows 10 and 11 and writes a zip when the name ends in .zip. Windows' own copy is used by its
 // full path: a tar from Git or MSYS earlier on the PATH reads "C:" as the name of another computer.

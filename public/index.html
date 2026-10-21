@@ -116,6 +116,12 @@
       </label>
       <p class="hint option-hint">Some OFPs step down for airspace level rules. Off: the aircraft stays at the higher level and the climbs back up are skipped.</p>
       <label class="switch option">
+        <input id="weightGuard" type="checkbox" role="switch">
+        <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+        <span>Hold a step while the aircraft is too heavy</span>
+      </label>
+      <p class="hint option-hint">The aircraft may not manage the next level if it is more than 3% heavier than the OFP planned for that point, for example when you loaded extra fuel. On (the safe setting): the step waits and says so. Step now overrides it, or you can skip the step. Off: the step is flown whatever the aircraft weighs.</p>
+      <label class="switch option">
         <input id="atcFirst" type="checkbox" role="switch">
         <span class="track" aria-hidden="true"><span class="thumb"></span></span>
         <span>Ask BeyondATC first</span>
@@ -203,6 +209,7 @@
           <div class="actions">
             <button id="openLogs" type="button">Open log folder</button>
             <button id="openConfig" type="button">Open settings file</button>
+            <button id="openGuide" type="button">Open the guide</button>
           </div>
           <p class="hint"><span id="appVersion"></span>. Settings file: <code>config.json</code> in the app's data folder; it holds the rarer options.</p>
         </div>

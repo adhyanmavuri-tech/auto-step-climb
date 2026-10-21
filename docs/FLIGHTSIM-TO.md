@@ -5,20 +5,20 @@ end under *Before you upload*.
 
 ## File to upload
 
-`release\AutoStepClimb-0.10.0.zip` (about 75 MB). It holds the installer (`AutoStepClimb-Setup-0.10.0.exe`), a
-short `README.txt`, the full guide `USER-GUIDE.txt` (the source is `docs\USER-GUIDE.md`), `LICENSE.txt` and
-`THIRD-PARTY-NOTICES.txt`. flightsim.to takes archives, not bare installers.
+`release\AutoStepClimb-0.10.1.zip` (about 75 MB). It holds the installer (`AutoStepClimb-Setup-0.10.1.exe`), a
+short `README.txt`, the full guide `USER-GUIDE.txt` (the source is `docs\USER-GUIDE.md`), `LICENSE.txt`,
+`THIRD-PARTY-NOTICES.txt` and `GPL-3.0.txt`. flightsim.to takes archives, not bare installers.
 
-SHA-256, so people can check what they downloaded (from the build on 2026-10-18):
+SHA-256, so people can check what they downloaded (from the build on 2026-10-19):
 
 ```
-zip        cd183227df68e9ed19600baad51913b609ca068e00f30f18e1e172c3d6d6c6bf
-installer  2ae70de5043e3d0a8f9cc7acb18cc7c9507e6dd60601e860842eb68cbe714ad0
+zip        6cf4ea5cb7c8f8a6e68945ea1eeedf2471c4781e5d327b11201558e8d48eb918
+installer  8d89f118b94a1e5bdb8535583cbeb2587c874672bccb2bfa7e08980c22d373bb
 ```
 
 ## Title
 
-Auto Step Climb: SimBrief step climbs for the iniBuilds A330, and BeyondATC step requests for other aircraft (MSFS 2024)
+Auto Step Climb: SimBrief Step Climbs for the iniBuilds A330
 
 ## Short description
 
@@ -34,7 +34,7 @@ sub-category that fits on the upload form.
 Tags: step climb, SimBrief, BeyondATC, iniBuilds, A330, A350, A340, PMDG, 777, 737, Fenix, FlyByWire, long haul,
 MSFS 2024 (use as many as the form allows, in this order)
 
-Version: 0.10.0 (beta)
+Version: 0.10.1 (beta)
 
 ## Description
 
@@ -69,6 +69,8 @@ A330 it does nothing unless you switch on the BeyondATC requests above.
   or a black-glass cockpit look.
 - A log of everything it did and why, so a flight left running overnight can be read in the morning.
 - A tray icon whose dot is the state: green waiting, cyan flying a step, amber needs a look, red a step failed.
+- A quiet Windows notification (no sound) for each step: started, complete, failed, held back for weight or skipped,
+  and, while it only watches, one saying the step was not flown.
 - A **Copy report** button for bug reports: one block of text (versions, plan, what it was doing, the last log
   lines) with your SimBrief name and Windows user name blanked out. It sends nothing by itself.
 
@@ -100,7 +102,7 @@ your SimBrief username. No account, no telemetry, no update checks.
 
 ## Installation
 
-1. Unzip, run `AutoStepClimb-Setup-0.10.0.exe`. Windows may say "Unknown publisher" because the installer is not
+1. Unzip, run `AutoStepClimb-Setup-0.10.1.exe`. Windows may say "Unknown publisher" because the installer is not
    code-signed: click **More info**, then **Run anyway**. It installs for your user only, with no administrator
    rights.
 2. On first start it asks whether it may start with Windows. Say yes: that is how it is waiting when you load the
@@ -108,6 +110,9 @@ your SimBrief username. No account, no telemetry, no update checks.
 3. Open **Settings** (the card at the bottom of the window), type your SimBrief username, press Save.
 4. Fly. Load the A330 at an airport and the window opens. For any other aircraft, switch on **Ask BeyondATC for the
    steps in other aircraft** (under *Steps* in the window) first, and have BeyondATC running.
+
+Update: unzip the new version and run its installer over the old one. Your settings and logs stay. The app never
+checks for updates by itself, so look at this page now and then.
 
 Uninstall from Windows Settings, Apps. Settings and logs stay in `%APPDATA%\Auto Step Climb`.
 
@@ -134,22 +139,38 @@ Uninstall from Windows Settings, Apps. Settings and logs stay in `%APPDATA%\Auto
 
 ## Changelog
 
-**0.10.0 (beta)** First public release: the Windows app (tray, launch at the airport, window, settings, installer)
+**0.10.1 (beta)** First public release: the Windows app (tray, launch at the airport, window, settings, installer)
 on the step-climb engine that was flown in a real overnight flight; SimBrief plans with newer-plan pickup at the
 gate; BeyondATC clearance for each step; watching only until you turn Live control on. New in this version:
 BeyondATC requests for other aircraft (the iniBuilds A350, A340, A320neo and A321LR, the PMDG 777 and 737, the Fenix
 A320 family, the FlyByWire A32NX and A380X, the Headwind A339X and any other): the app asks BeyondATC for each step
-before the step point and tells you the answer, and sends nothing to the aircraft.
+before the step point and tells you the answer, and sends nothing to the aircraft. Also in this version: a quiet
+notification for each step, a step carries on through a sim pause, a switch for the weight check, every part of the
+app runs at below-normal priority, and the licence, the notices and the guide are installed with the app.
 
 ## Credits and licence
 
 MIT licence (`LICENSE.txt` in the zip). Uses Electron, node-simconnect (LGPL, replaceable: see
 `THIRD-PARTY-NOTICES.txt`) and the public-domain OurAirports data. Not made by or affiliated with SimBrief,
-Microsoft, Asobo, iniBuilds or BeyondATC.
+Navigraph, Microsoft, Asobo, iniBuilds, PMDG, Fenix Simulations, FlyByWire Simulations, Headwind Simulations or
+BeyondATC. The source code is public: https://github.com/adhyanmavuri-tech/auto-step-climb
 
 Bug reports and requests: https://github.com/adhyanmavuri-tech/auto-step-climb/issues (a form asks for the details).
 In the app, **Settings, Copy report** puts the details on the clipboard and **Report a problem** opens the form to
-paste them into.
+paste them into. No GitHub account? Leave a comment on this page and paste the report in it.
+
+## Microsoft notice (add it to the description when the listing shows screenshots taken inside the sim)
+
+Microsoft's Game Content Usage Rules count screenshots as game content. They allow free, non-commercial sharing when
+the page carries this notice, plus a link to the rules. The rules page is general and does not name Flight Simulator,
+so this is Microsoft's own template with the names filled in:
+
+```
+Microsoft Flight Simulator © Microsoft Corporation. Auto Step Climb was created under Microsoft's "Game Content Usage Rules" using assets from Microsoft Flight Simulator, and it is not endorsed by or affiliated with Microsoft.
+Game Content Usage Rules: https://www.xbox.com/en-us/developers/rules
+```
+
+The app's own window and the simulated-aircraft pictures below show no game content, so they need no notice.
 
 ## Screenshots
 

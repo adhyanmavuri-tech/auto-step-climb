@@ -144,6 +144,10 @@ export interface EngineStatus {
   enabled: boolean
   live: boolean
   stepDowns: boolean
+  /** The weight check is on: a step is held while the aircraft is heavier than the OFP planned for that point. */
+  weightGuard: boolean
+  /** The next step is being held back for weight right now (the message says by how much). */
+  heldForWeight: boolean
   atcFirst: boolean
   atcClimbAnyway: boolean
   /** The switch for asking the ATC program about aircraft the app does not control. */
@@ -203,6 +207,9 @@ export class StepClimbEngine {
   private phase: Phase = 'idle'
   private message = 'Starting up'
   private lastT: number | null = null
+  /** The newest reading's own time, and the real time the sim has spent paused: the engine's clock leaves that out. */
+  private lastRealT: number | null = null
+  private pausedMs = 0
   private lastLatLon: LatLon | null = null
   /** The step being flown goes down (set when it begins). */
   private down = false
@@ -338,6 +345,8 @@ export class StepClimbEngine {
       enabled: this.options.enabled,
       live: this.options.live,
       stepDowns: this.options.stepDowns,
+      weightGuard: this.options.weightGuard,
+      heldForWeight: this.heldForWeight,
       atcFirst: this.options.atcFirst,
       atcClimbAnyway: this.options.atcClimbAnyway,
       atcOtherAircraft: this.options.atcOtherAircraft,
@@ -366,21 +375,27 @@ export class StepClimbEngine {
     return [{ type: 'atc-cancel' }, ...cmds]
   }
 
-  private tickInner(s: Snapshot | null): Command[] {
-    if (!s) {
+  private tickInner(raw: Snapshot | null): Command[] {
+    if (!raw) {
       this.dropAtc()
       this.lastLatLon = null
+      this.lastRealT = null
       this.askOnlyAircraft = false
       if (this.actuating()) this.abortActive('lost the connection to the sim')
       return this.hold('idle', 'Waiting for the simulator')
     }
-    if (!s.aircraftOk) {
+    if (!raw.aircraftOk) {
       this.dropAtc()
       this.lastLatLon = null
       this.askOnlyAircraft = false
       if (this.actuating()) this.abortActive('aircraft changed')
-      return this.hold('idle', `Unsupported aircraft: ${s.title || 'none loaded'} (no profile, or its controls are missing - see the log)`)
+      return this.hold('idle', `Unsupported aircraft: ${raw.title || 'none loaded'} (no profile, or its controls are missing - see the log)`)
     }
+
+    // The engine keeps its own clock, which stands still while the sim is paused: a pause must not run out the timers of
+    // a step in progress, and nothing is sent into a paused sim.
+    const s = this.onOwnClock(raw)
+    if (s.simPaused) return this.holdWhilePaused()
 
     const dt = this.lastT === null ? 0 : Math.min(Math.max((s.t - this.lastT) / 1000, 0), 5)
     this.lastT = s.t
@@ -403,6 +418,23 @@ export class StepClimbEngine {
       default:
         return this.evaluate(s)
     }
+  }
+
+  /**
+   * The reading with the engine's own clock. While the sim is paused the aircraft does not move and nothing it is told is
+   * carried out, so the time between those readings is left out: a step is not given up on because someone paused.
+   */
+  private onOwnClock(raw: Snapshot): Snapshot {
+    const gap = this.lastRealT === null ? 0 : Math.max(raw.t - this.lastRealT, 0)
+    this.lastRealT = raw.t
+    if (raw.simPaused) this.pausedMs += gap
+    return this.pausedMs === 0 ? raw : { ...raw, t: raw.t - this.pausedMs }
+  }
+
+  /** A paused sim carries out nothing: no command goes into it, and no timer runs. The step carries on when it runs again. */
+  private holdWhilePaused(): Command[] {
+    this.setPhase(this.phase, this.actuating() ? 'The sim is paused: the step carries on when it runs again' : 'The sim is paused')
+    return []
   }
 
   // ---- bookkeeping -----------------------------------------------------------------------

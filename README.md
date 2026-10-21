@@ -41,6 +41,8 @@ It starts **watching only**: it reads the sim and logs what it would do, but it 
 To remove it: Windows Settings, Apps, Auto Step Climb, Uninstall. Your settings and logs stay in
 `%APPDATA%\Auto Step Climb` until you delete that folder.
 
+To update, run the new installer over the old one: your settings and logs stay.
+
 ## How it behaves
 
 - **It waits.** From the moment it starts it sits in the tray. While the sim is not running, or no flight is
@@ -222,6 +224,9 @@ The point is to leave it alone: set it up once, check it, then fly or sleep. Not
    time.
 6. Afterwards, the Plan table shows what was done, skipped or failed, and `logs\autostep.log` records everything
    the app did and why. Send it with any bug report.
+
+A quiet Windows notification (no sound) says what happens to each step: it starts, is complete, fails, is held for
+weight or is skipped, and, while the app only watches, that a step was not flown.
 
 While you are away, anything unexpected makes it do less, never more. It skips a step it couldn't start within
 `lateWindowNm` of the fix, pauses when you are off the route, holds a step while the aircraft is heavier than the
@@ -411,7 +416,7 @@ apply the next time the app starts. Everything under `engine` is optional.
 | `engine.leadNm` | `0` | Start this many NM before the step fix |
 | `engine.lateWindowNm` | `40` | Still start up to this far after the fix, then skip the step |
 | `engine.maxCrossTrackNm` | `30` | Pause when this far off the planned route |
-| `engine.weightGuard` | `true` | Hold a step while heavier than the OFP planned |
+| `engine.weightGuard` | `true` | Hold a step while heavier than the OFP planned (also the **Hold a step while the aircraft is too heavy** switch in the Steps card) |
 | `engine.weightToleranceFrac` | `0.03` | How much heavier counts as too heavy (3%) |
 | `engine.minCruiseAltFt` | `20000` | The lowest altitude that counts as cruise. Lower it only to test a step low down, never for real flying |
 | `engine.maxAltitudeFt` | `41000` | Never step above this |
@@ -441,8 +446,9 @@ If an update renames an input event the profile uses, the app says which one is 
   parked A330 only, so treat the first live run with the Windows app as a test, and keep **Confirm each step**
   on for it.
 - Time acceleration and pausing are handled from the aircraft's position, and so far only against a simulated
-  aircraft, not in the real sim. A pause in the middle of a step is not handled: the step's timeouts keep
-  running, so it can be abandoned (the FCU is put back) and the step is lost.
+  aircraft, not in the real sim. A pause in the middle of a step is recognised from the aircraft standing still in
+  the air: the app stops its own clock and sends nothing until the sim runs again, so the step carries on
+  afterwards (checked against a simulated aircraft only).
 - It talks to BeyondATC only (see *Asking BeyondATC for the step*), through an unofficial interface. It can't
   request or announce a step climb to a controller on VATSIM or IVAO, and a step in the filed route isn't a
   clearance either. There, use **Confirm each step**: it stops at the step point and waits for you to get the
@@ -531,5 +537,5 @@ preview.bat (npm run preview)               your flight plan flown by a simulate
 
 MIT, see `LICENSE`. Other software in the app, including Electron and the LGPL-licensed node-simconnect, is
 listed in `THIRD-PARTY-NOTICES.md`. Airport names: [OurAirports](https://ourairports.com/data/) (public
-domain). Flight plans: [SimBrief](https://www.simbrief.com/). Not made by or affiliated with SimBrief, Microsoft,
-Asobo, iniBuilds or BeyondATC.
+domain). Flight plans: [SimBrief](https://www.simbrief.com/). Not made by or affiliated with SimBrief, Navigraph,
+Microsoft, Asobo, iniBuilds, PMDG, Fenix Simulations, FlyByWire Simulations, Headwind Simulations or BeyondATC.

@@ -310,6 +310,12 @@ function makeReport(): string {
   return lastReport
 }
 
+/** The guide that comes with the app: next to the program once installed, in the docs folder when run from the source. */
+function guideFile(): string | null {
+  const candidates = [path.join(path.dirname(process.execPath), 'USER-GUIDE.txt'), path.join(appRoot, 'docs', 'USER-GUIDE.md')]
+  return candidates.find((f) => fs.existsSync(f)) ?? null
+}
+
 const hostActions: Record<string, ActionFn> = {
   'set-login-item': (body) => setStartWithWindows(body.enabled === true),
   'copy-report': () => {
@@ -331,6 +337,13 @@ const hostActions: Record<string, ActionFn> = {
   'open-config': async () => {
     if (!fs.existsSync(configFile)) saveConfigValues(configFile, [])
     const problem = await shell.openPath(configFile)
+    if (problem) throw new Error(problem)
+  },
+  'open-guide': async () => {
+    const file = guideFile()
+    if (!file) throw new Error('The guide is not installed with this copy of the app')
+    if (flags.selftest) return `Would open ${file}` // the self-test must not open a window on your screen
+    const problem = await shell.openPath(file)
     if (problem) throw new Error(problem)
   },
   'show-window': () => showWindow()
@@ -528,13 +541,28 @@ function serveAsset(request: Request): Response {
   }
 }
 
-async function main(): Promise<void> {
-  // Never in the sim's way: the app takes what is left over.
+/** Puts the main process and every helper Chromium has started at below-normal priority (none is ever raised). */
+function lowerPriorities(): void {
+  const below = os.constants.priority.PRIORITY_BELOW_NORMAL
+  const pids = new Set<number>([process.pid])
   try {
-    os.setPriority(process.pid, os.constants.priority.PRIORITY_BELOW_NORMAL)
+    for (const m of app.getAppMetrics()) pids.add(m.pid)
   } catch {
-    // not allowed here: carry on
+    // the metrics are not there yet: the main process is still lowered
   }
+  for (const pid of pids) {
+    try {
+      if (os.getPriority(pid) < below) os.setPriority(pid, below)
+    } catch {
+      // the process has just gone, or may not be changed: carry on
+    }
+  }
+}
+
+async function main(): Promise<void> {
+  // Never in the sim's way: the app takes what is left over. That is the main process and every helper Chromium starts
+  // (its graphics helper asks for a higher priority than the app has), kept that way while the app runs.
+  lowerPriorities()
   Menu.setApplicationMenu(null)
   protocol.handle('autostep', serveAsset)
   session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false))
@@ -580,6 +608,9 @@ async function main(): Promise<void> {
   createTray()
   timers.push(setInterval(updateTray, 1000))
   timers.push(setInterval(() => pushState(), 1000))
+  // Chromium starts helpers later (a window's page, the graphics helper) and can raise a page's process when its window
+  // comes to the front: put them back every few seconds.
+  timers.push(setInterval(lowerPriorities, 5_000))
 
   if (flags.selftest) {
     await runSelfTest(path.resolve(flags.selftest))
@@ -726,6 +757,15 @@ async function runSelfTest(outDir: string): Promise<void> {
     const hidden = await wide.eval<boolean>("document.getElementById('reportProblem').hidden")
     check('the Report a problem button shows only when a page is set', hidden === (issuesUrl() === ''), String(hidden))
 
+    // The guide and the licences come with the app.
+    const guide = await wide.eval<string>("window.autostep.act('open-guide', {}).then((m) => String(m), (e) => 'ERROR ' + e.message)")
+    check('Open the guide finds the guide that comes with the app', app.isPackaged ? /^Would open .*[\\/]USER-GUIDE\.txt$/.test(guide) : /^Would open .*[\\/]USER-GUIDE\.md$/.test(guide), guide)
+    if (app.isPackaged) {
+      const installDir = path.dirname(process.execPath)
+      const missing = ['LICENSE.txt', 'THIRD-PARTY-NOTICES.txt', 'GPL-3.0.txt', 'USER-GUIDE.txt', 'LICENSE.electron.txt', 'LICENSES.chromium.html'].filter((f) => !fs.existsSync(path.join(installDir, f)))
+      check('the licence, the notices and the guide are installed with the app', missing.length === 0, missing.join(', '))
+    }
+
     // Settings are written to config.json, next to what was already there.
     await wide.eval("window.autostep.act('set-confirm-each', { enabled: true })")
     const saved = fs.existsSync(configFile) ? (JSON.parse(fs.readFileSync(configFile, 'utf8')) as { engine?: { confirmEachStep?: boolean } }) : {}
@@ -748,6 +788,13 @@ async function runSelfTest(outDir: string): Promise<void> {
       check('"ask BeyondATC in other aircraft" is off by default and is saved when switched on', otherOff && savedOther.engine?.atcOtherAircraft === true)
       await wide.eval("window.autostep.act('atc-other-aircraft', { enabled: false })")
     }
+
+    // The weight check is on until it is switched off, and the choice is saved.
+    const guardOn = (core.getState() as { engine: { weightGuard: boolean } }).engine.weightGuard === true
+    await wide.eval("window.autostep.act('weight-guard', { enabled: false })")
+    const savedGuard = fs.existsSync(configFile) ? (JSON.parse(fs.readFileSync(configFile, 'utf8')) as { engine?: { weightGuard?: boolean } }) : {}
+    check('the weight check is on by default and its choice is saved', guardOn && savedGuard.engine?.weightGuard === false)
+    await wide.eval("window.autostep.act('weight-guard', { enabled: true })")
 
     // The page's own address serves its files and nothing else.
     const status = await wide.eval<number>("fetch('autostep://app/package.json').then((r) => r.status)")
@@ -857,7 +904,18 @@ async function runSelfTest(outDir: string): Promise<void> {
     }
 
     check('the tray icon exists', tray !== null && !tray.isDestroyed())
-    check('it runs at below-normal priority', os.getPriority(process.pid) === os.constants.priority.PRIORITY_BELOW_NORMAL, String(os.getPriority(process.pid)))
+    // Every part of the app, not only the main process: Chromium's graphics helper starts above normal. The app sets
+    // them all back every few seconds, so wait for one pass after the last window was opened and closed.
+    await sleep(6_000)
+    const aboveNormal = app.getAppMetrics().flatMap((m) => {
+      try {
+        const p = os.getPriority(m.pid)
+        return p < os.constants.priority.PRIORITY_BELOW_NORMAL ? [`${m.type} ${m.pid}: ${p}`] : []
+      } catch {
+        return []
+      }
+    })
+    check('every part of the app runs at below-normal priority', aboveNormal.length === 0 && os.getPriority(process.pid) >= os.constants.priority.PRIORITY_BELOW_NORMAL, aboveNormal.join(' | '))
     check('no errors were reported by the page', pageErrors.length === 0, pageErrors.join(' | '))
 
     clearInterval(push)

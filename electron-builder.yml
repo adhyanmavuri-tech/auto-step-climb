@@ -26,6 +26,18 @@ extraResources:
     filter:
       - "*.json"
 
+# Next to the program: the licence, the third-party notices and the guide, so every installed copy carries them (the
+# LGPL asks for its notice with each copy; Electron's own licence files are there already).
+extraFiles:
+  - from: LICENSE
+    to: LICENSE.txt
+  - from: THIRD-PARTY-NOTICES.md
+    to: THIRD-PARTY-NOTICES.txt
+  - from: licenses/GPL-3.0.txt
+    to: GPL-3.0.txt
+  - from: docs/USER-GUIDE.md
+    to: USER-GUIDE.txt
+
 asar: true
 # node-simconnect is LGPL: it stays a separate module as real files, so it can be replaced (THIRD-PARTY-NOTICES.md).
 asarUnpack:

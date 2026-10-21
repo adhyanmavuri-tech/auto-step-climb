@@ -19,7 +19,10 @@ folder `resources\app.asar.unpacked\node_modules\node-simconnect`, next to its o
 that folder with another version of the library, or with your own modified build, and the app will use it. The
 library's source is at the address above.
 
-node-simconnect itself uses `debug` (MIT) and `ini` (ISC).
+The LGPL text is in the library's own `LICENSE` file. The LGPL builds on the GNU General Public License version 3,
+whose text is `GPL-3.0.txt`, next to this file.
+
+node-simconnect itself uses `debug` (MIT, which uses `ms`, also MIT) and `ini` (ISC).
 
 ## Airport list
 
@@ -29,4 +32,5 @@ domain. It is used to name the airport the aircraft is parked at.
 ## SimBrief
 
 Flight plans are read from your own SimBrief account through SimBrief's public OFP interface. Auto Step Climb is
-not made by or affiliated with SimBrief, Navigraph, Microsoft, Asobo, iniBuilds or BeyondATC.
+not made by or affiliated with SimBrief, Navigraph, Microsoft, Asobo, iniBuilds, PMDG, Fenix Simulations,
+FlyByWire Simulations, Headwind Simulations or BeyondATC.

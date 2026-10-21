@@ -65,6 +65,8 @@ export interface Snapshot {
   control: 'knob' | 'direct' | 'none'
   /** The ATC program (BeyondATC), when the app is set up to ask it first. */
   atc?: AtcState | null
+  /** True while the sim is paused (the aircraft stands still in the air). The host works it out from the readings. */
+  simPaused?: boolean
 }
 
 /** The ATC program's answer to the engine's latest altitude request. */

@@ -42,10 +42,15 @@ PROBLEMS?
   versions, your plan, what the app was doing and the last log lines on your clipboard, with your SimBrief
   name and Windows user name blanked out. Then press "Report a problem" (it opens the bug report form) and
   paste the report in. The page is https://github.com/adhyanmavuri-tech/auto-step-climb/issues. The app never
-  sends anything by itself.
+  sends anything by itself. No GitHub account? Comment on the flightsim.to page and paste the report there.
+
+UPDATE
+  Run the new installer over the old one. Your settings and logs stay.
 
 REMOVE
   Windows Settings > Apps > Auto Step Climb > Uninstall. Your settings and logs stay in
   %APPDATA%\Auto Step Climb unless you delete that folder.
 
-Licence: MIT (LICENSE.txt). Other software in the app: THIRD-PARTY-NOTICES.txt.
+Licence: MIT (LICENSE.txt). Other software in the app: THIRD-PARTY-NOTICES.txt (GPL-3.0.txt is the GNU licence
+text that one of its parts builds on).
+Source code: https://github.com/adhyanmavuri-tech/auto-step-climb
