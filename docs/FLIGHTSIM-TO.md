@@ -5,26 +5,25 @@ end under *Before you upload*.
 
 ## File to upload
 
-`release\AutoStepClimb-0.10.1.zip` (about 75 MB). It holds the installer (`AutoStepClimb-Setup-0.10.1.exe`), a
+`release\AutoStepClimb-0.10.2.zip` (about 75 MB). It holds the installer (`AutoStepClimb-Setup-0.10.2.exe`), a
 short `README.txt`, the full guide `USER-GUIDE.txt` (the source is `docs\USER-GUIDE.md`), `LICENSE.txt`,
 `THIRD-PARTY-NOTICES.txt` and `GPL-3.0.txt`. flightsim.to takes archives, not bare installers.
 
-SHA-256, so people can check what they downloaded (from the build on 2026-10-19):
+SHA-256, so people can check what they downloaded (from the build on 2026-10-20):
 
 ```
-zip        6cf4ea5cb7c8f8a6e68945ea1eeedf2471c4781e5d327b11201558e8d48eb918
-installer  8d89f118b94a1e5bdb8535583cbeb2587c874672bccb2bfa7e08980c22d373bb
+zip        90ce6bed91849486adb99df1a0dddf85445b1a4d903cd158958f7949869cf99b
+installer  3755a48452f2ac1d853677717b79f268483482a5c423902bc2e34dc4be56c86e
 ```
 
 ## Title
 
-Auto Step Climb: SimBrief Step Climbs for the iniBuilds A330
+Auto Step Climb
 
 ## Short description
 
-Flies the step climbs of your SimBrief plan in the iniBuilds A330, and asks BeyondATC for the step climbs of other
-aircraft: the A350, A340, 777, 737, the Fenix and FlyByWire Airbuses and more. It waits in the tray and opens by
-itself when you are at the airport.
+Flies the step climbs of your SimBrief plan in the iniBuilds A330, and can ask BeyondATC for each new level. In other
+aircraft it only asks BeyondATC and tells you the answer. A tray app for MSFS 2024 that opens by itself at the airport.
 
 ## Category and tags
 
@@ -34,32 +33,47 @@ sub-category that fits on the upload form.
 Tags: step climb, SimBrief, BeyondATC, iniBuilds, A330, A350, A340, PMDG, 777, 737, Fenix, FlyByWire, long haul,
 MSFS 2024 (use as many as the form allows, in this order)
 
-Version: 0.10.1 (beta)
+Version: 0.10.2 (beta)
 
 ## Description
 
-**Fly the long haul and let the step climbs fly themselves.**
+**Auto Step Climb takes care of the step climbs on a long flight.** It reads the step climbs from your SimBrief flight
+plan and, in the iniBuilds A330, flies them for you at each step point. It can also ask BeyondATC for each new level,
+in the A330 and in other aircraft.
 
-Auto Step Climb reads the step climbs from your SimBrief flight plan and, at each step point, sets the FCU
-altitude to the new level and starts the climb in the iniBuilds A330 (managed, with an open climb as the
-fallback), the way you would. Leave the cruise alone, or sleep through it.
+**What it does**
 
-**New: BeyondATC requests for other aircraft.** Many airliners climb to the next level by themselves at the step
-point (the iniBuilds A340 and A350 and the PMDG 777 have an automatic step climb option, for example), and with the
-others you climb yourself. BeyondATC only changes your cleared level when you ask for a new one, so nothing tells
-it. Switch on **Ask BeyondATC for the steps in other aircraft** and the app asks for you, about 10 NM before each
-step point, then tells you what the controller said with a notification ("BeyondATC cleared FL380"). It works with
-any aircraft, because it only reads the aircraft's position and altitude: no profile and no add-on, not even
-MobiFlight. It is aimed at the iniBuilds A350, A340, A320neo and A321LR, the PMDG 777 and 737 families, the Fenix
-A319/A320/A321, the FlyByWire A32NX and A380X and the Headwind A339X. In those aircraft it **never sends anything to
-the aircraft**: it only asks BeyondATC and tells you.
+- **iniBuilds A330: it flies the step climbs.** At each step point it sets the FCU altitude to the new level and
+  starts the climb, the way you would: a managed climb (push), with an open climb (pull) as the fallback. Leave the
+  cruise alone, or sleep through it. It starts **watching only**: you turn on **Live control** when you want it to
+  operate the FCU.
+- **iniBuilds A330 with BeyondATC: it asks first.** Turn on **Ask BeyondATC first** and it requests each new level from
+  BeyondATC like you would, and only climbs once the controller has cleared it. If BeyondATC doesn't clear a step, the
+  step is skipped: a switch, **Climb anyway if BeyondATC does not clear it** (off by default), lets a flight on your own
+  climb anyway.
+- **Other aircraft: it only asks BeyondATC.** Many airliners climb to the next level by themselves at the step point
+  (the iniBuilds A340 and A350 and the PMDG 777 have an automatic step climb option, for example), and with the others
+  you climb yourself. BeyondATC only changes your cleared level when you ask for a new one, so nothing tells it. Switch
+  on **Ask BeyondATC for the steps in other aircraft** and the app asks for you, about 10 NM before each step point,
+  then tells you what the controller said with a notification ("BeyondATC cleared FL380"). It **never sends anything
+  to the aircraft**. It works with any aircraft, because it only reads the aircraft's position and altitude: no profile
+  and no add-on, not even MobiFlight. It is aimed at the iniBuilds A350, A340, A320neo and A321LR, the PMDG 777 and 737
+  families, the Fenix A319/A320/A321, the FlyByWire A32NX and A380X and the Headwind A339X.
 
-**You never start it.** It waits quietly in the system tray (about 55 MB of memory, no graphics card, well under 1%
-of one processor core, and it yields to the sim). When Microsoft Flight Simulator is running and your A330 is on the
-ground at an airport, it
-fetches your latest SimBrief plan and opens its window *behind* the sim, without taking the keyboard from it, and
-a notification says where it is: "A330 ready at EGLL". It does not start with the sim. In an aircraft other than the
-A330 it does nothing unless you switch on the BeyondATC requests above.
+**What it does not do**
+
+- It operates only the iniBuilds A330, the one aircraft profile that comes with it. In every other aircraft it sends
+  nothing.
+- It cannot read the MCDU, so the steps come from your SimBrief plan (or the Steps box in the window).
+- It cannot request a step from a human controller on VATSIM or IVAO.
+- It cannot stop an aircraft's own automatic step climb.
+
+**You never start it.** It waits quietly in the system tray (about 55 MB of memory, no graphics card, well under 1% of
+one processor core, and every part of it yields to the sim). When Microsoft Flight Simulator is running and your A330
+is on the ground at an airport, it fetches your latest SimBrief plan and opens its window *behind* the sim, without
+taking the keyboard from it, and a notification says where it is: "A330 ready at EGLL". It does not start with the sim,
+so let it start with Windows. In an aircraft other than the A330 it does nothing unless you switch on the BeyondATC
+requests above.
 
 **What you see**
 
@@ -80,14 +94,9 @@ A330 it does nothing unless you switch on the BeyondATC requests above.
   window says so at the top). Turn on **Live control** in Settings when you want it to operate the FCU; it asks you
   to confirm.
 - It acts only in stable level cruise, within 30 NM of the planned route, for steps of up to 4,000 ft, and holds a
-  step while the aircraft is heavier than the OFP planned. Anything unexpected makes it do less, never more.
+  step while the aircraft is heavier than the OFP planned (a switch in the Steps card turns that check off). Anything
+  unexpected makes it do less, never more.
 - **Stop** ends whatever is in progress. **Confirm each step** makes it wait for you at every step point.
-
-**BeyondATC (optional).** Turn on **Ask BeyondATC first** and it requests each new level from BeyondATC like you
-would, and only climbs once the controller has cleared it. If BeyondATC doesn't clear a step, the step is skipped:
-a switch, **Climb anyway if BeyondATC does not clear it** (off by default), lets a flight on your own climb anyway.
-In other aircraft, **Ask BeyondATC for the steps in other aircraft** asks for the new level and tells you the
-answer; it never climbs anything.
 
 **Private.** The only thing that leaves your PC is the request for your latest flight plan to simbrief.com, with
 your SimBrief username. No account, no telemetry, no update checks.
@@ -102,7 +111,7 @@ your SimBrief username. No account, no telemetry, no update checks.
 
 ## Installation
 
-1. Unzip, run `AutoStepClimb-Setup-0.10.1.exe`. Windows may say "Unknown publisher" because the installer is not
+1. Unzip, run `AutoStepClimb-Setup-0.10.2.exe`. Windows may say "Unknown publisher" because the installer is not
    code-signed: click **More info**, then **Run anyway**. It installs for your user only, with no administrator
    rights.
 2. On first start it asks whether it may start with Windows. Say yes: that is how it is waiting when you load the
@@ -139,7 +148,7 @@ Uninstall from Windows Settings, Apps. Settings and logs stay in `%APPDATA%\Auto
 
 ## Changelog
 
-**0.10.1 (beta)** First public release: the Windows app (tray, launch at the airport, window, settings, installer)
+**0.10.2 (beta)** First public release: the Windows app (tray, launch at the airport, window, settings, installer)
 on the step-climb engine that was flown in a real overnight flight; SimBrief plans with newer-plan pickup at the
 gate; BeyondATC clearance for each step; watching only until you turn Live control on. New in this version:
 BeyondATC requests for other aircraft (the iniBuilds A350, A340, A320neo and A321LR, the PMDG 777 and 737, the Fenix

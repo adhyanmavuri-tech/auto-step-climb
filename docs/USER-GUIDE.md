@@ -1,6 +1,6 @@
 # Auto Step Climb: summary and user guide
 
-Version 0.10.1 (beta), for Microsoft Flight Simulator 2024 on Windows.
+Version 0.10.2 (beta), for Microsoft Flight Simulator 2024 on Windows.
 
 This guide has two parts: a summary of what the tool is and does, then a step-by-step guide to using it. It is
 written for people who fly, not for programmers. Where a word needs explaining, it is explained.
@@ -65,7 +65,7 @@ core. It runs at low priority so the sim always comes first.
 
 ### 1. Install it (once)
 
-1. Unzip the download and run `AutoStepClimb-Setup-0.10.1.exe`.
+1. Unzip the download and run `AutoStepClimb-Setup-0.10.2.exe`.
 2. Windows may say "Unknown publisher", because the installer is not code-signed. Click **More info**, then
    **Run anyway**. It installs for your user only and needs no administrator rights.
 3. The first time it opens it asks whether it may start with Windows. Say yes: that is how it is already

@@ -882,25 +882,35 @@ async function runSelfTest(outDir: string): Promise<void> {
     const simconnect = require('node-simconnect') as { open?: unknown }
     check('the SimConnect library loads (it is only loaded, never opened)', typeof simconnect.open === 'function')
 
-    // The start-with-Windows entry, in the installed app only: switched on, read back, and switched off again.
-    // Whatever the person had chosen is put back afterwards (the entry is shared with a copy that is really in use).
+    // The start-with-Windows entry, in the installed app only: switched on, read back, and switched off again. The entry is
+    // shared with any copy that is really in use (the installed one, or another self-test running at the same time), so
+    // when there already is one, whatever file it points at, nothing is touched: it is not switched on, and above all not off.
     if (app.isPackaged) {
-      const before = readLoginItem()
-      const turnedOn = await wide.eval<string>("window.autostep.act('set-login-item', { enabled: true }).then(() => 'ok', (e) => e.message)")
-      const readBackOn = readLoginItem()
-      let entry = ''
+      let existing = false
       try {
-        entry = execFileSync('reg', ['query', 'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'], { encoding: 'utf8' })
-          .split(/\r?\n/)
-          .filter((line) => line.toLowerCase().includes(path.basename(process.execPath).toLowerCase()))
-          .join(' | ')
-          .replace(/\s+/g, ' ')
+        execFileSync('reg', ['query', 'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run', '/v', APP_ID], { stdio: 'ignore' })
+        existing = true
       } catch {
-        // the detail is a convenience
+        // no entry
       }
-      const turnedOff = await wide.eval<string>("window.autostep.act('set-login-item', { enabled: false }).then(() => 'ok', (e) => e.message)")
-      check('Start with Windows can be switched on and off', turnedOn === 'ok' && readBackOn && turnedOff === 'ok' && !readLoginItem(), entry)
-      if (before) setStartWithWindows(true)
+      if (existing) {
+        check('Start with Windows can be switched on and off', true, 'not tried: an entry is set on this PC, so it was left alone')
+      } else {
+        const turnedOn = await wide.eval<string>("window.autostep.act('set-login-item', { enabled: true }).then(() => 'ok', (e) => e.message)")
+        const readBackOn = readLoginItem()
+        let entry = ''
+        try {
+          entry = execFileSync('reg', ['query', 'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run'], { encoding: 'utf8' })
+            .split(/\r?\n/)
+            .filter((line) => line.toLowerCase().includes(path.basename(process.execPath).toLowerCase()))
+            .join(' | ')
+            .replace(/\s+/g, ' ')
+        } catch {
+          // the detail is a convenience
+        }
+        const turnedOff = await wide.eval<string>("window.autostep.act('set-login-item', { enabled: false }).then(() => 'ok', (e) => e.message)")
+        check('Start with Windows can be switched on and off', turnedOn === 'ok' && readBackOn && turnedOff === 'ok' && !readLoginItem(), entry)
+      }
     }
 
     check('the tray icon exists', tray !== null && !tray.isDestroyed())
